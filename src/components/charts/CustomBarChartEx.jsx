@@ -11,7 +11,7 @@ import {
   Cell,
 } from "recharts";
 
-const CustomBarChart = ({ data }) => {
+const CustomBarChartEx = ({ data }) => {
   const getBarColor = (index) => {
     return index % 2 === 0 ? "#875cf5" : "#cfbefb";
   };
@@ -38,7 +38,7 @@ const CustomBarChart = ({ data }) => {
         <BarChart data={data}>
           <CartesianGrid stroke="none" />
           <XAxis
-            dataKey="month"
+            dataKey="category"
             tick={{ fontSize: 12, fill: "#555" }}
             stroke="none"
           />
@@ -62,4 +62,4 @@ const CustomBarChart = ({ data }) => {
   );
 };
 
-export default CustomBarChart;
+export default CustomBarChartEx;

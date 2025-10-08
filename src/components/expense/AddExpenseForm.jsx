@@ -48,7 +48,7 @@ const AddExpenseForm = ({ onAddExpense }) => {
           className="add-btn add-btn-fill"
           onClick={() => onAddExpense(income)}
         >
-          Add Income
+          Add Expense
         </button>
       </div>
     </div>
