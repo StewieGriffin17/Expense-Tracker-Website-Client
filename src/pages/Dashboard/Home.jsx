@@ -54,7 +54,7 @@ const Home = () => {
           <InfoCard
             icon={<IoMdCard />}
             label="Total Balance"
-            value={addThousandsSeparator(dashboardData?.totalBalance || 0)}
+            value={addThousandsSeparator(dashboardData?.balance || 0)}
             color="bg-primary"
           />
 
@@ -80,7 +80,7 @@ const Home = () => {
           />
 
           <FinanceOverview
-            totalBalance={dashboardData?.totalBalance || 0}
+            balance={dashboardData?.balance || 0}
             totalIncome={dashboardData?.totalIncome || 0}
             totalExpense={dashboardData?.totalExpenses || 0}
           />

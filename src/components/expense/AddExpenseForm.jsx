@@ -1,15 +1,14 @@
 import React, { useState } from "react";
-import Input from "../inputs/Input";
 import EmojiPickerPopup from "../EmojiPickerPopup";
+import Input from "../inputs/Input";
 
-const AddIncomeForm = ({ onAddIncome }) => {
+const AddExpenseForm = ({ onAddExpense }) => {
   const [income, setIncome] = useState({
-    source: "",
+    category: "",
     amount: "",
     date: "",
     icon: "",
   });
-
   const handleChange = (key, value) => setIncome({ ...income, [key]: value });
 
   return (
@@ -20,10 +19,10 @@ const AddIncomeForm = ({ onAddIncome }) => {
       />
 
       <Input
-        value={income.source}
-        onChange={({ target }) => handleChange("source", target.value)}
-        label="Income Source"
-        placeholder="Freelance, Salary, etc"
+        value={income.category}
+        onChange={({ target }) => handleChange("category", target.value)}
+        label="Expense Category"
+        placeholder="Rent, Food, etc"
         type="text"
       />
 
@@ -47,7 +46,7 @@ const AddIncomeForm = ({ onAddIncome }) => {
         <button
           type="button"
           className="add-btn add-btn-fill"
-          onClick={() => onAddIncome(income)}
+          onClick={() => onAddExpense(income)}
         >
           Add Income
         </button>
@@ -56,4 +55,4 @@ const AddIncomeForm = ({ onAddIncome }) => {
   );
 };
 
-export default AddIncomeForm;
+export default AddExpenseForm;

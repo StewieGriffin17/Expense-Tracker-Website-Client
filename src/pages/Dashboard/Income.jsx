@@ -5,8 +5,14 @@ import axiosInstance from "../../utils/axiosInstance";
 import { API_PATHS } from "../../utils/apiPaths";
 import Modal from "../../components/Modal";
 import AddIncomeForm from "../../components/income/AddIncomeForm";
+import toast from "react-hot-toast";
+import IncomeList from "../../components/income/IncomeList";
+import DeleteAlert from "../../components/DeleteAlert";
+import { useUserAuth } from "../../hooks/useUserAuth";
 
 const Income = () => {
+  useUserAuth()
+
   const [openAddIncomeModal, setOpenAddIncomeModal] = useState(false);
   const [incomeData, setIncomeData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -36,11 +42,82 @@ const Income = () => {
     }
   };
 
-  const handleAddIncome = async (income) => {};
+  // Handle Add Income
+  const handleAddIncome = async (income) => {
+    const { source, amount, date, icon } = income;
 
-  const deleteIncome = async (id) => {};
+    // Validation Checks
+    if (!source.trim()) {
+      toast.error("Source is required.");
+      return;
+    }
+    if (!amount || isNaN(amount) || Number(amount) <= 0) {
+      toast.error("Amount should be a valid number greater than 0.");
+      return;
+    }
 
-  const handleDownloadIncomeDetails = async () => {};
+    if (!date) {
+      toast.error("Date is required.");
+      return;
+    }
+
+    try {
+      await axiosInstance.post(API_PATHS.INCOME.ADD_INCOME, {
+        source,
+        amount,
+        date,
+        icon,
+      });
+
+      setOpenAddIncomeModal(false);
+      toast.success("Income added successfully.");
+      fetchIncomeDetails();
+    } catch (error) {
+      console.error(
+        "Error adding income: ",
+        error.response?.data?.message || error.message
+      );
+    }
+  };
+
+  const deleteIncome = async (id) => {
+    try {
+      await axiosInstance.delete(API_PATHS.INCOME.DELETE_INCOME(id));
+
+      setOpenDeleteAlert({ show: false, data: null });
+      toast.success("Income details deleted successfully.");
+      fetchIncomeDetails();
+    } catch (error) {
+      console.error(
+        "Error deleting income: ",
+        error.response?.data?.message || error.message
+      );
+    }
+  };
+
+  // handle download income details
+  const handleDownloadIncomeDetails = async () => {
+    try {
+      const response = await axiosInstance.get(
+        API_PATHS.INCOME.DOWNLOAD_INCOME,
+        {
+          responseType: "blob",
+        }
+      );
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "income_details.xlsx");
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error downloading income details: ", error);
+      toast.error("Failed. Please try again later.");
+    }
+  };
 
   useEffect(() => {
     fetchIncomeDetails();
@@ -58,6 +135,14 @@ const Income = () => {
               onAddIncome={() => setOpenAddIncomeModal(true)}
             />
           </div>
+
+          <IncomeList
+            transactions={incomeData}
+            onDelete={(id) => {
+              setOpenDeleteAlert({ show: true, data: id });
+            }}
+            onDownload={handleDownloadIncomeDetails}
+          />
         </div>
 
         <Modal
@@ -66,8 +151,18 @@ const Income = () => {
           title="Add Income"
         >
           <AddIncomeForm onAddIncome={handleAddIncome} />
-        </Modal>
+        </Modal>  
 
+        <Modal
+          isOpen={openDeleteAlert.show}
+          onClose={() => setOpenDeleteAlert({ show: false, data: null })}
+          title="Delete Income"
+        >
+          <DeleteAlert
+            content="Are you sure you want to delete this income details?"
+            onDelete={() => deleteIncome(openDeleteAlert.data)}
+          />
+        </Modal>
       </div>
     </DashboardLayout>
   );
